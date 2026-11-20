@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block title %}Agenda Événements & Bons Plans à Tunis - TunisSpot{% endblock %}
+
+{% block content %}
+<div class="bg-slate-900 text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <span class="px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 text-xs font-bold uppercase tracking-wider mb-2 inline-block">
+                    <i class="fa-solid fa-ticket mr-1"></i> Actualités Urbaines & Partenariats
+                </span>
+                <h1 class="text-3xl sm:text-5xl font-black">Agenda & Bons Plans Partenaires</h1>
+                <p class="text-xs sm:text-sm text-slate-400 mt-2">Concerts, soirées, festivals et promotions exclusives négociées pour les utilisateurs TunisSpot.</p>
+            </div>
+            {% if user.is_authenticated %}
+            <div class="flex space-x-2">
+                <a href="{% url 'events:event_create' %}" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow transition">
+                    + Publier un événement
+                </a>
+                <a href="{% url 'events:offre_create' %}" class="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-xl shadow transition">
+                    + Créer une offre promo
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
+    
+    <!-- OFFRES PROMOTIONS / BONS PLANS (Exclusivité) -->
+    <div>
+        <div class="flex items-center space-x-2 pb-4 border-b border-slate-200 mb-6">
+            <i class="fa-solid fa-tag text-amber-500 text-xl"></i>
+            <h2 class="text-2xl font-black text-slate-900">Bons Plans & Réductions Exclusives</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for offre in offres %}
+            <div class="bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 rounded-3xl p-6 text-white shadow-lg flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between text-xs mb-3">
+                        <div class="flex items-center space-x-1.5">
+                            <span class="px-2.5 py-0.5 rounded-full bg-black/20 font-bold uppercase tracking-wider text-[10px]">
+                                Partenaire Officiel
+                            </span>
+                            {% if user.is_authenticated and offre.cree_par == user %}
+                            <span class="px-2 py-0.5 rounded-full bg-white/25 font-bold text-[10px] text-white">
+                                <i class="fa-solid fa-user-check mr-1"></i> Votre offre
+                            </span>
+                            {% endif %}
+                        </div>
+                        <span class="font-black text-lg bg-white text-orange-600 px-3 py-0.5 rounded-full shadow">
+                            -{{ offre.reduction_pourcentage }}%
+                        </span>
+                    </div>
+
+                    <h3 class="text-xl font-black text-white leading-snug mb-1">{{ offre.titre }}</h3>
+                    <p class="text-xs text-white/90 mb-4">{{ offre.description }}</p>
+                    
+                    <div class="text-xs font-semibold text-white/90">
+                        <i class="fa-solid fa-location-dot mr-1"></i> Valable chez <a href="{% url 'spots:spot_detail' offre.lieu.slug %}" class="underline font-bold text-white">{{ offre.lieu.nom }}</a>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-white/20 flex items-center justify-between">
+                    <div class="text-xs">
+                        <span class="block text-[10px] text-white/70 uppercase">Code promo</span>
+                        <span class="font-mono font-black text-sm tracking-wider">{{ offre.code_promo|default:"EN DIRECT" }}</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-[10px] text-white/80">Jusqu'au {{ offre.date_fin|date:"d/m/Y" }}</span>
+                        {% if not offre.est_active %}
+                        <span class="px-2 py-0.5 rounded-full bg-black/40 text-[10px] font-bold text-amber-200">Brouillon</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if user.is_authenticated %}
+                  {% if offre.cree_par == user or user.is_staff or user.role == 'ADMIN' %}
+                  <div class="mt-3 pt-3 border-t border-white/20 flex items-center justify-end space-x-2">
+                      <a href="{% url 'events:offre_edit' offre.id %}" class="px-3 py-1 bg-white/20 hover:bg-white/30 text-white rounded-lg text-xs font-bold transition inline-flex items-center gap-1 shadow-sm">
+                          <i class="fa-solid fa-pen text-[10px]"></i> Modifier
+                      </a>
+                      <a href="{% url 'events:offre_delete' offre.id %}" class="px-3 py-1 bg-rose-600/80 hover:bg-rose-600 text-white rounded-lg text-xs font-bold transition inline-flex items-center gap-1 shadow-sm">
+                          <i class="fa-solid fa-trash text-[10px]"></i> Supprimer
+                      </a>
+                  </div>
+                  {% endif %}
+                {% endif %}
+            </div>
+            {% empty %}
+            <p class="text-xs text-slate-400 col-span-full">Aucune promotion en cours. Les propriétaires partenaires publient régulièrement de nouveaux bons plans !</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ÉVÉNEMENTS AGENDA -->
+    <div>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-200 mb-6">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-calendar-check text-rose-500 text-xl"></i>
+                <h2 class="text-2xl font-black text-slate-900">Agenda des Sorties & Soirées</h2>
+            </div>
+
+            <!-- FILTRES D'AFFICHAGE -->
+            <div class="flex items-center space-x-2 text-xs">
+                <a href="?filtre=tous{% if selected_cat %}&categorie={{ selected_cat }}{% endif %}" 
+                   class="px-3 py-1.5 rounded-xl font-bold transition {% if filtre == 'tous' %}bg-rose-600 text-white shadow{% else %}bg-slate-100 text-slate-600 hover:bg-slate-200{% endif %}">
+                    Tous les événements
+                </a>
+                <a href="?filtre=a_venir{% if selected_cat %}&categorie={{ selected_cat }}{% endif %}" 
+                   class="px-3 py-1.5 rounded-xl font-bold transition {% if filtre == 'a_venir' %}bg-rose-600 text-white shadow{% else %}bg-slate-100 text-slate-600 hover:bg-slate-200{% endif %}">
+                    À venir
+                </a>
+                {% if user.is_authenticated %}
+                <a href="?filtre=mes_evenements{% if selected_cat %}&categorie={{ selected_cat }}{% endif %}" 
+                   class="px-3 py-1.5 rounded-xl font-bold transition {% if filtre == 'mes_evenements' %}bg-rose-600 text-white shadow{% else %}bg-slate-100 text-slate-600 hover:bg-slate-200{% endif %}">
+                    <i class="fa-solid fa-user mr-1"></i> Mes publications
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for event in events %}
+            <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-200 flex flex-col sm:flex-row gap-5">
+                <img src="{{ event.image }}" alt="{{ event.titre }}" class="w-full sm:w-44 h-40 rounded-2xl object-cover flex-shrink-0">
+                <div class="flex-1 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between text-xs mb-1 flex-wrap gap-1">
+                            <span class="font-bold text-rose-600"><i class="fa-regular fa-clock mr-1"></i> {{ event.date_debut|date:"d M Y - H:i" }}</span>
+                            <div class="flex items-center space-x-1.5">
+                                {% if event.date_fin < now %}
+                                <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 text-[10px] font-bold">
+                                    <i class="fa-solid fa-clock-rotate-left mr-1"></i> Passé
+                                </span>
+                                {% else %}
+                                <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold">
+                                    <i class="fa-solid fa-circle text-[6px] mr-1 text-emerald-500"></i> À venir
+                                </span>
+                                {% endif %}
+
+                                {% if user.is_authenticated and event.cree_par == user %}
+                                <span class="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-[10px] font-bold">
+                                    <i class="fa-solid fa-user-check mr-1"></i> Publié par vous
+                                </span>
+                                {% endif %}
+                                <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold">{{ event.categorie }}</span>
+                            </div>
+                        </div>
+                        <h3 class="font-black text-slate-900 text-lg leading-snug">{{ event.titre }}</h3>
+                        <p class="text-xs text-slate-500 line-clamp-2 mt-1 leading-relaxed">{{ event.description }}</p>
+                        {% if event.cree_par %}
+                        <p class="text-[10px] text-slate-400 mt-1">
+                            <i class="fa-solid fa-user-pen mr-1"></i> Proposé par <span class="font-semibold text-slate-600">{{ event.cree_par.nom|default:event.cree_par.username }}</span> ({{ event.cree_par.get_role_display }})
+                        </p>
+                        {% endif %}
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                        <a href="{% url 'spots:spot_detail' event.lieu.slug %}" class="font-bold text-slate-700 hover:text-teal-600">
+                            <i class="fa-solid fa-location-dot text-teal-600 mr-1"></i> {{ event.lieu.nom }}
+                        </a>
+                        <div class="flex items-center space-x-2">
+                            <span class="font-black text-emerald-600 mr-2">
+                                {% if event.prix == 0 %}Gratuit{% else %}{{ event.prix }} DT{% endif %}
+                            </span>
+                            {% if user.is_authenticated %}
+                              {% if event.cree_par == user or user.is_staff or user.role == 'ADMIN' %}
+                              <a href="{% url 'events:event_edit' event.id %}" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold inline-flex items-center gap-1 transition" title="Modifier mon événement">
+                                  <i class="fa-solid fa-pen text-xs"></i> Modifier
+                              </a>
+                              <a href="{% url 'events:event_delete' event.id %}" class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold inline-flex items-center gap-1 transition" title="Supprimer mon événement">
+                                  <i class="fa-solid fa-trash text-xs"></i> Supprimer
+                              </a>
+                              {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-xs text-slate-400 col-span-full">Aucun événement ne correspond à ce filtre.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

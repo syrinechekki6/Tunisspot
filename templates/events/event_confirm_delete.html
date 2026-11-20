@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Supprimer l'événement - TunisSpot{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto px-4 py-16">
+    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-200 text-center">
+        <h2 class="text-xl font-black text-slate-900 mb-2">Supprimer cet événement ?</h2>
+        <p class="text-xs text-slate-500 mb-6">Êtes-vous sûr de vouloir retirer <b>{{ event.titre }}</b> de l'agenda ?</p>
+        <form method="POST" class="flex items-center justify-center space-x-3">
+            {% csrf_token %}
+            <a href="{% url 'events:event_list' %}" class="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600">Annuler</a>
+            <button type="submit" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow">Supprimer</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
