@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - TunisSpot{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto px-4 py-12">
+    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-200">
+        <div class="flex items-center space-x-3 mb-6 pb-4 border-b border-slate-100">
+            <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-lg">
+                <i class="fa-solid fa-camera"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-black text-slate-900">{{ title }}</h1>
+                <p class="text-xs text-slate-500">Partagez vos plus beaux clichés de {{ lieu.nom }}</p>
+            </div>
+        </div>
+
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">URL de l'image (Lien web direct) *</label>
+                {{ form.url }}
+                <p class="text-[11px] text-slate-400 mt-1">Ex: https://images.unsplash.com/... ou lien d'hébergeur d'images</p>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Légende / Description</label>
+                {{ form.legende }}
+            </div>
+
+            <div class="flex items-center justify-end space-x-3 pt-6 border-t border-slate-100">
+                <a href="{% url 'spots:spot_detail' lieu.slug %}" class="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition">Annuler</a>
+                <button type="submit" class="px-6 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold shadow transition">
+                    {% if is_edit %}Enregistrer les modifications{% else %}Publier la photo (+10 pts){% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
