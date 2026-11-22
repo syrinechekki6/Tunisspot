@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title|default:"Donner mon avis" }} - {{ lieu.nom }} - TunisSpot{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-12">
+    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-200">
+        <div class="mb-6 pb-4 border-b border-slate-100 flex items-center space-x-3">
+            <img src="{{ lieu.image_principale }}" alt="{{ lieu.nom }}" class="w-12 h-12 rounded-2xl object-cover">
+            <div>
+                <h1 class="text-xl font-black text-slate-900">{{ title|default:"Donner mon avis sur" }} {{ lieu.nom }}</h1>
+                <p class="text-xs text-slate-500">Votre évaluation aide la communauté et fait évoluer le label Pépite Locale !</p>
+            </div>
+        </div>
+
+        <form method="POST" class="space-y-5">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Note Globale *</label>
+                {{ form.note }}
+            </div>
+
+            <!-- Notes par critères (RF10) -->
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-3">
+                <span class="block text-xs font-black text-slate-700 uppercase tracking-wider">Notation détaillée par critères</span>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">🍽️ Qualité des plats / boissons</label>
+                        {{ form.note_qualite }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">🤝 Accueil et Service</label>
+                        {{ form.note_service }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">💰 Rapport Qualité / Prix</label>
+                        {{ form.note_prix }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">✨ Cadre et Ambiance</label>
+                        {{ form.note_ambiance }}
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Votre commentaire d'expérience *</label>
+                {{ form.commentaire }}
+            </div>
+
+            <div class="flex items-center justify-between pt-4 border-t border-slate-100 text-xs">
+                <span class="text-slate-400">
+                    {% if not is_edit %}
+                    <i class="fa-solid fa-award text-amber-500 mr-1"></i> Vous gagnerez <b>+15 points</b> sur votre Passeport
+                    {% else %}
+                    <i class="fa-solid fa-pen text-teal-600 mr-1"></i> Mise à jour de votre évaluation
+                    {% endif %}
+                </span>
+                <div class="flex space-x-3">
+                    <a href="{% url 'spots:spot_detail' lieu.slug %}" class="px-5 py-2.5 rounded-xl border border-slate-200 font-bold text-slate-600">Annuler</a>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold shadow">
+                        {% if is_edit %}Enregistrer les modifications{% else %}Publier mon avis{% endif %}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
