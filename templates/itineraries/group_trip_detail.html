@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Sortie : {{ sortie.titre }} - TunisSpot{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200 mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-100 gap-4">
+            <div>
+                <span class="px-3 py-1 rounded-full text-xs font-black bg-amber-100 text-amber-800">
+                    {{ sortie.get_statut_display }}
+                </span>
+                <h1 class="text-3xl font-black text-slate-900 mt-2">{{ sortie.titre }}</h1>
+                <p class="text-xs text-slate-500 mt-1">Prévue le <b>{{ sortie.date_sortie|date:"d M Y" }}</b> • Organisée par <b>{{ sortie.createur.nom|default:sortie.createur.username }}</b></p>
+            </div>
+            <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl text-center">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Code Invitation</span>
+                <span class="text-base font-black font-mono text-teal-600">{{ sortie.code_invitation }}</span>
+            </div>
+        </div>
+        {% if sortie.description %}
+        <p class="text-xs sm:text-sm text-slate-600 mt-4 leading-relaxed">{{ sortie.description }}</p>
+        {% endif %}
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Propositions & Votes (8 cols) -->
+        <div class="lg:col-span-8 space-y-4">
+            <h2 class="text-xl font-black text-slate-900 mb-2">Lieux Proposés & Votes des Amis</h2>
+
+            {% for prop in propositions %}
+            <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center space-x-4">
+                    <img src="{{ prop.lieu.image_principale }}" alt="{{ prop.lieu.nom }}" class="w-16 h-16 rounded-2xl object-cover flex-shrink-0">
+                    <div>
+                        <span class="text-[10px] font-bold text-teal-600 uppercase">{{ prop.lieu.categorie.libelle }}</span>
+                        <a href="{% url 'spots:spot_detail' prop.lieu.slug %}" class="font-bold text-slate-900 text-base block hover:text-teal-600">
+                            {{ prop.lieu.nom }}
+                        </a>
+                        <p class="text-xs text-slate-500">{{ prop.lieu.quartier.nom }} • {{ prop.lieu.fourchette_prix }}</p>
+                        {% if prop.commentaire %}
+                        <p class="text-xs text-slate-600 italic mt-1">« {{ prop.commentaire }} »</p>
+                        {% endif %}
+                        <span class="text-[10px] text-slate-400">Proposé par {{ prop.propose_par.username }}</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-3 self-end sm:self-center">
+                    <span class="text-sm font-black text-slate-900">
+                        {{ prop.votes.count }} vote{{ prop.votes.count|pluralize }}
+                    </span>
+                    <form action="{% url 'itineraries:vote_proposition' prop.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="px-4 py-2 bg-teal-50 hover:bg-teal-600 hover:text-white text-teal-700 font-bold text-xs rounded-xl transition flex items-center space-x-1.5">
+                            <i class="fa-solid fa-thumbs-up"></i>
+                            <span>Voter pour</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% empty %}
+            <div class="bg-white rounded-3xl p-8 border border-slate-200 text-center text-xs text-slate-400">
+                Aucun lieu n'a encore été proposé. Utilisez le formulaire à droite pour suggérer une adresse !
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Suggest a spot (4 cols) -->
+        <div class="lg:col-span-4 bg-white p-6 rounded-3xl shadow-sm border border-slate-200 h-fit">
+            <h3 class="font-black text-slate-900 text-base mb-3 flex items-center">
+                <i class="fa-solid fa-lightbulb text-amber-500 mr-2"></i> Proposer un spot au vote
+            </h3>
+            <form method="POST" class="space-y-4">
+                {% csrf_token %}
+                <input type="hidden" name="propose_lieu" value="1">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Choisir le spot</label>
+                    <select name="lieu_id" required class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+                        {% for l in lieux_disponibles %}
+                        <option value="{{ l.id }}">{{ l.nom }} ({{ l.quartier.nom }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pourquoi ce spot ? (Optionnel)</label>
+                    <input type="text" name="commentaire" placeholder="Ex: Super terrasse et pas cher..." class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-xl shadow transition">
+                    Soumettre la proposition
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

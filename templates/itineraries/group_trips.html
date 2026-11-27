@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Sorties de Groupe & Votes - TunisSpot{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-200 mb-8 gap-4">
+        <div>
+            <span class="px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-bold uppercase tracking-wider">Module 5</span>
+            <h1 class="text-3xl font-black text-slate-900 mt-1">Sorties de Groupe & Système de Vote</h1>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Planifiez vos sorties entre amis : proposez des lieux et votez pour décider ensemble !</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- New Group Trip Form (4 cols) -->
+        <div class="lg:col-span-4 bg-white p-6 rounded-3xl shadow-sm border border-slate-200 h-fit">
+            <h3 class="font-black text-slate-900 text-base mb-4 flex items-center">
+                <i class="fa-solid fa-users text-teal-600 mr-2"></i> Créer une sortie de groupe
+            </h3>
+            <form method="POST" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Titre de la sortie *</label>
+                    {{ form.titre }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Date prévue *</label>
+                    {{ form.date_sortie }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Description / Objectif</label>
+                    {{ form.description }}
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-xl shadow transition">
+                    Créer & Ouvrir le vote
+                </button>
+            </form>
+        </div>
+
+        <!-- My Group Trips (8 cols) -->
+        <div class="lg:col-span-8 space-y-4">
+            <h3 class="font-black text-slate-900 text-lg mb-2">Mes Sorties en Cours</h3>
+            {% for s in sorties %}
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">
+                        {{ s.get_statut_display }}
+                    </span>
+                    <h4 class="font-black text-slate-900 text-lg mt-1">{{ s.titre }}</h4>
+                    <p class="text-xs text-slate-500 mt-0.5">Date : <b>{{ s.date_sortie|date:"d M Y" }}</b> • Code invitation : <span class="font-mono font-bold text-teal-600">{{ s.code_invitation }}</span></p>
+                </div>
+                <a href="{% url 'itineraries:group_trip_detail' s.code_invitation %}" class="px-5 py-2.5 bg-slate-900 hover:bg-teal-600 text-white text-xs font-bold rounded-xl shadow transition text-center">
+                    Voir les votes & Proposer
+                </a>
+            </div>
+            {% empty %}
+            <div class="bg-white rounded-3xl p-8 border border-slate-200 text-center text-xs text-slate-400">
+                Vous n'avez pas encore de sortie de groupe créée. Utilisez le formulaire à gauche pour lancer votre première sortie !
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
