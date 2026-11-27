@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Espace Propriétaire d'Établissement - TunisSpot{% endblock %}
+
+{% block content %}
+<div class="bg-slate-900 text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <span class="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold uppercase tracking-wider mb-2 inline-block">
+                    <i class="fa-solid fa-store mr-1"></i> Espace Partenaire & Établissements (RF30)
+                </span>
+                <h1 class="text-3xl font-black">Tableau de Bord Propriétaire</h1>
+                <p class="text-xs sm:text-sm text-slate-400 mt-1">Suivez les performances de vos fiches, gérez vos cartes et publiez des offres spéciales.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    
+    {% if aucun_lieu %}
+    <div class="bg-white rounded-3xl p-10 text-center border border-slate-200 max-w-lg mx-auto space-y-4">
+        <div class="w-16 h-16 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto text-2xl">
+            <i class="fa-solid fa-store"></i>
+        </div>
+        <h2 class="text-xl font-black text-slate-900">Aucun établissement rattaché</h2>
+        <p class="text-xs text-slate-500 leading-relaxed">
+            Pour accéder aux outils de gestion et statistiques, vous devez soit créer un nouvel établissement, soit revendiquer un lieu existant sur TunisSpot.
+        </p>
+        {% if pending_claim %}
+        <div class="p-3 rounded-2xl bg-sky-50 text-sky-800 text-xs font-semibold">
+            Votre demande de revendication pour <b>{{ pending_claim.lieu.nom }}</b> est en cours d'examen par notre équipe.
+        </div>
+        {% endif %}
+        <div class="pt-2 flex justify-center gap-3">
+            <a href="{% url 'spots:spot_create' %}" class="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-xl shadow">
+                + Ajouter mon établissement
+            </a>
+            <a href="{% url 'spots:spot_list' %}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl">
+                Chercher mon lieu à revendiquer
+            </a>
+        </div>
+    </div>
+
+    {% else %}
+
+    <!-- METRICS OVERVIEW (FONCTION UNIQUE MODULE 6) -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+            <span class="text-[11px] font-bold text-slate-400 uppercase">Vues de la Fiche</span>
+            <span class="text-3xl font-black text-slate-900 block mt-1">{{ total_vues }}</span>
+            <span class="text-[10px] text-teal-600 font-semibold"><i class="fa-solid fa-eye mr-1"></i> Visiteurs uniques</span>
+        </div>
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+            <span class="text-[11px] font-bold text-slate-400 uppercase">Clics Itinéraire / Trajets</span>
+            <span class="text-3xl font-black text-slate-900 block mt-1">{{ total_itineraires }}</span>
+            <span class="text-[10px] text-sky-600 font-semibold"><i class="fa-solid fa-route mr-1"></i> Intentions de visite</span>
+        </div>
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+            <span class="text-[11px] font-bold text-slate-400 uppercase">Ajouts aux Favoris</span>
+            <span class="text-3xl font-black text-slate-900 block mt-1">{{ total_favoris }}</span>
+            <span class="text-[10px] text-rose-600 font-semibold"><i class="fa-solid fa-heart mr-1"></i> Clients intéressés</span>
+        </div>
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+            <span class="text-[11px] font-bold text-slate-400 uppercase">Consultations Menu</span>
+            <span class="text-3xl font-black text-slate-900 block mt-1">{{ total_menus }}</span>
+            <span class="text-[10px] text-amber-600 font-semibold"><i class="fa-solid fa-utensils mr-1"></i> Intérêt culinaire</span>
+        </div>
+    </div>
+
+    <!-- MANAGED ESTABLISHMENTS LIST -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200">
+        <h3 class="font-black text-slate-900 text-lg mb-6">Mes Établissements ({{ mes_lieux.count }})</h3>
+        
+        <div class="space-y-6">
+            {% for spot in mes_lieux %}
+            <div class="p-6 rounded-2xl border border-slate-200 bg-slate-50/50 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div class="flex items-center space-x-4">
+                    <img src="{{ spot.image_principale }}" alt="{{ spot.nom }}" class="w-20 h-20 rounded-2xl object-cover">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h4 class="font-black text-slate-900 text-lg">{{ spot.nom }}</h4>
+                            {% if spot.est_pepite_locale %}
+                            <span class="badge-pepite text-white text-[10px] font-black px-2.5 py-0.5 rounded-full">Pépite</span>
+                            {% endif %}
+                        </div>
+                        <p class="text-xs text-slate-500 mt-0.5">{{ spot.quartier.nom }} • ⭐ <b>{{ spot.note_moyenne }}</b> ({{ spot.nombre_avis }} avis)</p>
+                        <p class="text-xs text-slate-400 mt-1">Horaires : {{ spot.horaires }}</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-2 text-xs font-bold">
+                    <a href="{% url 'spots:plat_create' spot.id %}" class="px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl shadow transition">
+                        + Ajouter Plat au Menu
+                    </a>
+                    <a href="{% url 'events:offre_create' %}" class="px-3.5 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl shadow transition">
+                        + Créer une Offre Promo
+                    </a>
+                    <a href="{% url 'spots:spot_edit' spot.id %}" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl transition">
+                        Modifier Fiche
+                    </a>
+                    <a href="{% url 'spots:spot_detail' spot.slug %}" class="px-3.5 py-2 border border-slate-300 bg-white text-slate-700 rounded-xl hover:bg-slate-100 transition">
+                        Voir la fiche en direct
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

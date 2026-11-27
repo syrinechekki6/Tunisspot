@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirmer la suppression utilisateur - Back-Office TunisSpot{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto px-4 py-16">
+    <div class="bg-white rounded-3xl p-8 shadow-xl border border-slate-200 text-center">
+        <div class="w-14 h-14 bg-rose-50 text-rose-600 rounded-3xl flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner">
+            <i class="fa-solid fa-user-xmark"></i>
+        </div>
+        <h1 class="text-xl font-black text-slate-900 mb-2">Supprimer l'utilisateur ?</h1>
+        
+        <div class="my-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center space-x-3 text-left">
+            {% if user_to_delete.avatar_display %}
+            <img src="{{ user_to_delete.avatar_display }}" 
+                 alt="{{ user_to_delete.username }}" class="w-10 h-10 rounded-full object-cover border border-slate-200">
+            {% else %}
+            <div class="w-10 h-10 rounded-full bg-slate-200 text-slate-500 border border-slate-200 flex items-center justify-center text-xs font-bold">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            {% endif %}
+            <div class="flex-1 overflow-hidden">
+                <span class="font-bold text-xs text-slate-900 block truncate">{{ user_to_delete.username }}</span>
+                <span class="text-[11px] text-slate-500 block truncate">{{ user_to_delete.email }}</span>
+                <span class="text-[10px] font-bold text-indigo-600 uppercase">{{ user_to_delete.get_role_display }}</span>
+            </div>
+        </div>
+
+        <p class="text-xs text-slate-500 mb-6 leading-relaxed">
+            Attention : la suppression d'un compte utilisateur est <b>définitive et irréversible</b>. Ses avis, favoris et données associées seront supprimés.
+        </p>
+
+        <form method="POST" class="flex items-center justify-center space-x-3">
+            {% csrf_token %}
+            <a href="{% url 'dashboard:admin_users' %}" class="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition">Annuler</a>
+            <button type="submit" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md transition flex items-center space-x-1.5">
+                <i class="fa-solid fa-trash text-xs"></i>
+                <span>Confirmer la suppression</span>
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

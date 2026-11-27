@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Mes Notifications - TunisSpot{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-12">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-200">
+        <h1 class="text-2xl font-black text-slate-900 mb-1 flex items-center">
+            <i class="fa-regular fa-bell text-teal-600 mr-2"></i> Notifications
+        </h1>
+        <p class="text-xs text-slate-500 mb-6">Vos alertes, récompenses et mises à jour sur vos adresses.</p>
+
+        <div class="space-y-3">
+            {% for n in notifications %}
+            <div class="p-4 rounded-2xl border border-slate-100 hover:bg-slate-50 transition flex items-start space-x-3">
+                <div class="w-9 h-9 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center flex-shrink-0 text-sm">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-sm text-slate-900">{{ n.titre }}</h4>
+                        <span class="text-[10px] text-slate-400">{{ n.date_envoi|timesince }}</span>
+                    </div>
+                    <p class="text-xs text-slate-600 mt-1">{{ n.message }}</p>
+                    {% if n.lien %}
+                    <a href="{{ n.lien }}" class="inline-block mt-2 text-xs font-bold text-teal-600 hover:underline">Consulter <i class="fa-solid fa-arrow-right text-[10px]"></i></a>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-xs text-slate-400 text-center py-8">Aucune notification pour le moment.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

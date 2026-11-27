@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Créer une offre promotionnelle - TunisSpot{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto px-4 py-12">
+    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-200">
+        <h1 class="text-xl font-black text-slate-900 mb-1">Créer une offre promotionnelle</h1>
+        <p class="text-xs text-slate-500 mb-6">Proposez un avantage ou réduction exclusive pour les membres TunisSpot.</p>
+
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Établissement *</label>
+                {{ form.lieu }}
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Titre de l'offre *</label>
+                {{ form.titre }}
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Code promo (Ex: TUNIS15)</label>
+                    {{ form.code_promo }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Réduction (%)</label>
+                    {{ form.reduction_pourcentage }}
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Date début</label>
+                    {{ form.date_debut }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Date expiration</label>
+                    {{ form.date_fin }}
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Description</label>
+                {{ form.description }}
+            </div>
+            <div class="flex items-center space-x-3 p-3.5 bg-amber-50 rounded-2xl border border-amber-200">
+                {{ form.est_active }}
+                <label for="{{ form.est_active.id_for_label }}" class="text-xs font-bold text-slate-800 cursor-pointer select-none">
+                    Offre active et visible immédiatement sur TunisSpot
+                </label>
+            </div>
+            <div class="flex items-center justify-end space-x-3 pt-6 border-t border-slate-100">
+                <a href="{% url 'events:event_list' %}" class="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600">Annuler</a>
+                <button type="submit" class="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold shadow">Publier la réduction</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

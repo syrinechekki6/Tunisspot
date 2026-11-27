@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - TunisSpot{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto px-4 py-12">
+    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-200">
+        <h1 class="text-xl font-black text-slate-900 mb-1">{{ title }}</h1>
+        <p class="text-xs text-slate-500 mb-6">Ajoutez un concert, exposition ou festival à l'agenda urbain.</p>
+
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Lieu / Établissement hôte *</label>
+                {{ form.lieu }}
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Titre de l'événement *</label>
+                {{ form.titre }}
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Date & Heure Début *</label>
+                    {{ form.date_debut }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Date & Heure Fin *</label>
+                    {{ form.date_fin }}
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Catégorie</label>
+                    {{ form.categorie }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tarif (DT - 0 si gratuit)</label>
+                    {{ form.prix }}
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">URL Image de l'affiche</label>
+                {{ form.image }}
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Description</label>
+                {{ form.description }}
+            </div>
+            <div class="flex items-center space-x-3 p-3.5 bg-rose-50 rounded-2xl border border-rose-200">
+                {{ form.est_populaire }}
+                <label for="{{ form.est_populaire.id_for_label }}" class="text-xs font-bold text-slate-800 cursor-pointer select-none">
+                    Mettre en avant cet événement sur TunisSpot
+                </label>
+            </div>
+            <div class="flex items-center justify-end space-x-3 pt-6 border-t border-slate-100">
+                <a href="{% url 'events:event_list' %}" class="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600">Annuler</a>
+                <button type="submit" class="px-6 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold shadow">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Inscription Gratuite - TunisSpot{% endblock %}
+
+{% block content %}
+<div class="min-h-[75vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full bg-white rounded-3xl p-8 shadow-xl border border-slate-200">
+        
+        <div class="text-center mb-6">
+            <div class="w-12 h-12 rounded-2xl bg-teal-600 text-white flex items-center justify-center mx-auto text-xl mb-3 shadow-md">
+                <i class="fa-solid fa-user-plus"></i>
+            </div>
+            <h2 class="text-2xl font-black text-slate-900">Rejoindre TunisSpot</h2>
+            <p class="text-xs text-slate-500 mt-1">Créez votre compte et recevez 50 points de bienvenue !</p>
+        </div>
+
+        {% if user.is_authenticated %}
+        <div class="mb-5 p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center justify-between gap-2">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-circle-info text-amber-500 text-sm"></i>
+                <span>Connecté sous <strong>{{ user.username }}</strong>.</span>
+            </div>
+            <a href="{% url 'users:logout' %}" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg transition whitespace-nowrap">
+                Déconnexion
+            </a>
+        </div>
+        {% endif %}
+
+        {% if form.errors %}
+        <div class="mb-5 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs">
+            <div class="font-bold flex items-center space-x-2 text-rose-800 mb-1">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>Veuillez corriger les erreurs suivantes :</span>
+            </div>
+            <ul class="list-disc list-inside space-y-1 pl-1 text-[11px]">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li><span class="font-bold">{{ field.label|default:field.name }}</span> : {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data" class="space-y-4" autocomplete="off">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nom d'utilisateur *</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <p class="text-[11px] text-rose-600 mt-1 font-semibold">{{ form.username.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nom complet (Optionnel)</label>
+                {{ form.nom }}
+                {% if form.nom.errors %}
+                    <p class="text-[11px] text-rose-600 mt-1 font-semibold">{{ form.nom.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Photo de profil (Optionnel)</label>
+                {{ form.photo_profil }}
+                {% if form.photo_profil.errors %}
+                    <p class="text-[11px] text-rose-600 mt-1 font-semibold">{{ form.photo_profil.errors.0 }}</p>
+                {% else %}
+                    <p class="text-[10px] text-slate-400 mt-0.5">Formats JPG, PNG ou WEBP (max 2 Mo). Si omis, une icône générique sera utilisée.</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Adresse E-mail *</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <p class="text-[11px] text-rose-600 mt-1 font-semibold">{{ form.email.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Rôle *</label>
+                    {{ form.role }}
+                    {% if form.role.errors %}
+                        <p class="text-[11px] text-rose-600 mt-1 font-semibold">{{ form.role.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Langue *</label>
+                    {{ form.langue }}
+                    {% if form.langue.errors %}
+                        <p class="text-[11px] text-rose-600 mt-1 font-semibold">{{ form.langue.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Mot de passe *</label>
+                {{ form.password1 }}
+                {% if form.password1.errors %}
+                    <p class="text-[11px] text-rose-600 mt-1 font-semibold">{{ form.password1.errors.0 }}</p>
+                {% else %}
+                    <p class="text-[10px] text-slate-400 mt-0.5">Minimum 4 caractères.</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Confirmer mot de passe *</label>
+                {{ form.password2 }}
+                {% if form.password2.errors %}
+                    <p class="text-[11px] text-rose-600 mt-1 font-semibold">{{ form.password2.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm rounded-xl shadow-lg transition">
+                Créer mon compte (+50 pts)
+            </button>
+        </form>
+
+        <div class="mt-6 pt-4 border-t border-slate-100 text-center text-xs text-slate-500">
+            Déjà inscrit ?
+            <a href="{% url 'users:login' %}" class="font-bold text-teal-600 hover:underline">Connexion</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

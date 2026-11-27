@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+
+{% block title %}Back-Office & Modération - TunisSpot{% endblock %}
+
+{% block content %}
+<div class="bg-slate-900 text-white py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <span class="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold uppercase tracking-wider mb-2 inline-block">
+                    <i class="fa-solid fa-shield-halved mr-1"></i> Espace Modération & Administration (RF30)
+                </span>
+                <h1 class="text-3xl font-black">Tableau de Bord Back-Office</h1>
+                <p class="text-xs text-slate-400 mt-1">Gérez le catalogue des lieux, modérez les contributions et traitez les revendications de propriétaires.</p>
+            </div>
+            <div class="flex items-center space-x-2 self-start">
+                <a href="{% url 'dashboard:admin_users' %}" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-users-gear"></i>
+                    <span>Gestion des Utilisateurs</span>
+                </a>
+                <a href="{% url 'spots:spot_create' %}" class="px-4 py-2.5 bg-teal-500 hover:bg-teal-600 text-slate-950 font-bold text-xs rounded-xl shadow transition">
+                    + Ajouter un spot
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    
+    <!-- KPI STATS CARDS -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
+            <span class="text-[11px] font-bold text-slate-400 uppercase">Total Spots</span>
+            <span class="text-2xl font-black text-slate-900 block mt-1">{{ total_spots }}</span>
+            <span class="text-[10px] text-teal-600 font-semibold">Grand Tunis</span>
+        </div>
+        <div class="bg-white p-5 rounded-3xl shadow-sm border {% if lieux_en_attente_count > 0 %}border-amber-400 bg-amber-50/20{% else %}border-slate-200{% endif %}">
+            <span class="text-[11px] font-bold text-slate-400 uppercase">Lieux en attente</span>
+            <span class="text-2xl font-black text-amber-600 block mt-1">{{ lieux_en_attente_count }}</span>
+            <span class="text-[10px] text-slate-500 font-semibold">À valider</span>
+        </div>
+        <a href="{% url 'dashboard:admin_users' %}" class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 hover:border-indigo-400 hover:shadow-md transition group block">
+            <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold text-slate-400 uppercase">Utilisateurs</span>
+                <i class="fa-solid fa-arrow-right text-[10px] text-slate-300 group-hover:text-indigo-600 transition"></i>
+            </div>
+            <span class="text-2xl font-black text-slate-900 block mt-1">{{ total_users }}</span>
+            <span class="text-[10px] text-sky-600 font-semibold">Gérer les comptes &rarr;</span>
+        </a>
+        <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
+            <span class="text-[11px] font-bold text-slate-400 uppercase">Avis Publiés</span>
+            <span class="text-2xl font-black text-slate-900 block mt-1">{{ total_avis }}</span>
+            <span class="text-[10px] text-amber-600 font-semibold">Communauté</span>
+        </div>
+        <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
+            <span class="text-[11px] font-bold text-slate-400 uppercase">Revendications</span>
+            <span class="text-2xl font-black text-amber-600 block mt-1">{{ revendications_en_attente }}</span>
+            <span class="text-[10px] text-slate-500 font-semibold">En attente</span>
+        </div>
+        <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
+            <span class="text-[11px] font-bold text-slate-400 uppercase">Signalements</span>
+            <span class="text-2xl font-black text-rose-600 block mt-1">{{ signalements_en_attente }}</span>
+            <span class="text-[10px] text-slate-500 font-semibold">À vérifier</span>
+        </div>
+    </div>
+
+    <!-- NOUVELLE SECTION : LIEUX EN ATTENTE DE VALIDATION (WORKFLOW VISITEUR -> ADMIN) -->
+    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+            <div>
+                <h3 class="font-black text-slate-900 text-lg flex items-center">
+                    <i class="fa-solid fa-clock text-amber-500 mr-2"></i> Lieux en attente de validation ({{ lieux_en_attente_count }})
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Les lieux proposés par les visiteurs restent invisibles au public jusqu'à validation de l'administrateur.</p>
+            </div>
+            {% if lieux_en_attente_count > 0 %}
+            <span class="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full animate-pulse">
+                Action requise
+            </span>
+            {% endif %}
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for lieu in lieux_en_attente %}
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-start justify-between gap-2 mb-2">
+                        <h4 class="font-bold text-sm text-slate-900 leading-snug">{{ lieu.nom }}</h4>
+                        <span class="px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-bold rounded-full whitespace-nowrap">
+                            En attente
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-500 mb-1">
+                        <i class="fa-solid fa-location-dot text-teal-600 mr-1"></i> {{ lieu.adresse }}, {{ lieu.quartier.nom }}
+                    </p>
+                    <p class="text-xs text-slate-500 mb-2">
+                        <i class="fa-solid fa-tag text-slate-400 mr-1"></i> {{ lieu.categorie.libelle }}
+                    </p>
+                    {% if lieu.description %}
+                    <p class="text-[11px] text-slate-600 line-clamp-2 bg-white p-2 rounded-xl border border-slate-100 mb-3">
+                        « {{ lieu.description }} »
+                    </p>
+                    {% endif %}
+                    <div class="text-[11px] text-slate-400 flex items-center justify-between">
+                        <span>Auteur : <b>{{ lieu.proprietaire.username|default:"Anonyme" }}</b> ({{ lieu.proprietaire.get_role_display }})</span>
+                        <span>{{ lieu.date_creation|timesince }}</span>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-200/80 flex items-center justify-between gap-2">
+                    <a href="{% url 'spots:spot_detail' lieu.slug %}" target="_blank" class="text-xs font-bold text-slate-600 hover:text-teal-600 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Prévisualiser
+                    </a>
+                    <div class="flex items-center space-x-1.5">
+                        <a href="{% url 'dashboard:admin_valider_lieu' lieu.id 'refuser' %}" 
+                           onclick="return confirm('Refuser et supprimer définitivement ce lieu ?')"
+                           class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl transition flex items-center gap-1">
+                            <i class="fa-solid fa-xmark text-[10px]"></i> Refuser
+                        </a>
+                        <a href="{% url 'dashboard:admin_valider_lieu' lieu.id 'accepter' %}" 
+                           class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center gap-1">
+                            <i class="fa-solid fa-check text-[10px]"></i> Accepter
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-xs text-slate-400 col-span-full text-center py-6">Aucun lieu en attente de validation pour le moment. Tous les lieux soumis ont été traités.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- PENDING REVIEWS & CLAIMS -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <!-- Revendications de fiches -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+                <h3 class="font-black text-slate-900 text-base flex items-center">
+                    <i class="fa-solid fa-store text-amber-500 mr-2"></i> Revendications de Propriétaires ({{ revendications.count }})
+                </h3>
+            </div>
+
+            <div class="space-y-4">
+                {% for rev in revendications %}
+                <div class="p-4 rounded-2xl bg-amber-50/50 border border-amber-200">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-900">{{ rev.lieu.nom }}</h4>
+                            <p class="text-xs text-slate-500">Demandeur : <b>{{ rev.user.username }}</b> ({{ rev.telephone_contact }})</p>
+                            <p class="text-xs text-slate-700 mt-2 bg-white p-2.5 rounded-xl border border-amber-100">
+                                <b>Justificatif :</b> {{ rev.justificatif }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-3 flex items-center justify-end space-x-2 pt-2 border-t border-amber-200/60">
+                        <a href="{% url 'dashboard:traiter_revendication' rev.id 'rejeter' %}" class="px-3 py-1.5 bg-slate-200 hover:bg-rose-100 hover:text-rose-700 text-slate-700 text-xs font-bold rounded-lg transition">
+                            Rejeter
+                        </a>
+                        <a href="{% url 'dashboard:traiter_revendication' rev.id 'valider' %}" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow transition">
+                            Approuver Propriétaire
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-xs text-slate-400 text-center py-6">Aucune demande de revendication en attente.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Signalements récents -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+                <h3 class="font-black text-slate-900 text-base flex items-center">
+                    <i class="fa-solid fa-flag text-rose-500 mr-2"></i> Derniers Signalements
+                </h3>
+            </div>
+
+            <div class="space-y-3">
+                {% for sig in signalements %}
+                <div class="p-3.5 rounded-2xl border border-slate-100 hover:bg-slate-50 transition">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold text-rose-600 uppercase">{{ sig.get_motif_display }}</span>
+                        <span class="text-slate-400">{{ sig.date_signalement|timesince }}</span>
+                    </div>
+                    <p class="text-xs font-semibold text-slate-800 mt-1">Concerne : <b>{{ sig.lieu.nom }}</b></p>
+                    <p class="text-xs text-slate-500 mt-1">« {{ sig.description }} »</p>
+                </div>
+                {% empty %}
+                <p class="text-xs text-slate-400 text-center py-6">Aucun signalement actif.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CATALOGUE DES LIEUX & ACTIONS DIRECTES -->
+    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+        <h3 class="font-black text-slate-900 text-base mb-4">Gestion du Catalogue (Derniers ajouts)</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead>
+                    <tr class="border-b border-slate-100 text-slate-400 uppercase font-bold">
+                        <th class="pb-3">Établissement</th>
+                        <th class="pb-3">Catégorie</th>
+                        <th class="pb-3">Quartier</th>
+                        <th class="pb-3">Note</th>
+                        <th class="pb-3">Pépite locale</th>
+                        <th class="pb-3">Propriétaire</th>
+                        <th class="pb-3 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
+                    {% for spot in recents_lieux %}
+                    <tr>
+                        <td class="py-3 font-bold text-slate-900">
+                            <a href="{% url 'spots:spot_detail' spot.slug %}" class="hover:text-teal-600">{{ spot.nom }}</a>
+                        </td>
+                        <td class="py-3">{{ spot.categorie.libelle }}</td>
+                        <td class="py-3">{{ spot.quartier.nom }}</td>
+                        <td class="py-3 font-bold text-amber-500">⭐ {{ spot.note_moyenne }}</td>
+                        <td class="py-3">
+                            {% if spot.est_pepite_locale %}
+                            <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px]">Oui</span>
+                            {% else %}
+                            <span class="text-slate-300">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3">
+                            {% if spot.proprietaire %}
+                            <span class="font-bold text-teal-600">{{ spot.proprietaire.username }}</span>
+                            {% else %}
+                            <span class="text-slate-400 italic">Non revendiqué</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3 text-right space-x-2">
+                            <a href="{% url 'spots:spot_edit' spot.id %}" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg">Modifier</a>
+                            <a href="{% url 'spots:spot_delete' spot.id %}" class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold rounded-lg">Supprimer</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
