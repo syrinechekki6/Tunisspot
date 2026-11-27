@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Revendiquer {{ lieu.nom }} - TunisSpot{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto px-4 py-12">
+    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-200">
+        <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl mb-4">
+            <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h1 class="text-xl font-black text-slate-900 mb-1">Revendiquer {{ lieu.nom }}</h1>
+        <p class="text-xs text-slate-500 mb-6 leading-relaxed">
+            Vous êtes le gérant ou propriétaire de cet établissement ? Revendiquez votre fiche officielle pour mettre à jour les horaires, gérer le menu numérique, répondre aux avis et consulter les statistiques de visites.
+        </p>
+
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Numéro de téléphone de contact *</label>
+                {{ form.telephone_contact }}
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Justificatif de propriété ou rôle *</label>
+                {{ form.justificatif }}
+            </div>
+            <div class="flex items-center justify-end space-x-3 pt-6 border-t border-slate-100">
+                <a href="{% url 'spots:spot_detail' lieu.slug %}" class="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600">Annuler</a>
+                <button type="submit" class="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold shadow">Envoyer la demande</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

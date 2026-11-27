@@ -1,0 +1,447 @@
+{% extends 'base.html' %}
+
+{% block title %}TunisSpot - Découvre les meilleurs spots à essayer à Tunis{% endblock %}
+
+{% block content %}
+<!-- HERO SECTION (Win Tokhrej Inspired) -->
+<section class="relative bg-slate-950 text-white overflow-hidden py-20 lg:py-28">
+    <!-- Background Image with Gradient Overlay -->
+    <div class="absolute inset-0 z-0">
+        <img src="https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=2000&q=80" 
+             alt="Tunis Skyline Sidi Bou Said" 
+             class="w-full h-full object-cover opacity-25 scale-105 transform hover:scale-100 transition duration-1000 ease-out">
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-teal-950/40 via-transparent to-amber-950/30"></div>
+    </div>
+
+    <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <!-- Badge Tagline -->
+        <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-teal-500/20 border border-teal-500/30 text-teal-300 text-xs sm:text-sm font-semibold mb-6 backdrop-blur-md">
+            <span class="w-2 h-2 rounded-full bg-teal-400 animate-ping"></span>
+            <span>Le guide de référence des loisirs et sorties à Tunis</span>
+        </div>
+
+        <!-- Big Headline -->
+        <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-tight text-white mb-4">
+            On sort où aujourd'hui ?<br>
+            <span class="bg-gradient-to-r from-teal-400 via-emerald-300 to-amber-300 bg-clip-text text-transparent">
+                وين تخرج اليوم في تونس؟
+            </span>
+        </h1>
+        
+        <p class="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto mb-10 font-normal">
+            Découvrez en quelques clics les restaurants réputés, cafés branchés, adresses secrètes du Grand Tunis avec menus, avis vérifiés et transports intégrés.
+        </p>
+
+        <!-- Main Search Box (Win Tokhrej Style Hero Card) -->
+        <div class="bg-white/95 backdrop-blur-md p-3 sm:p-4 rounded-3xl shadow-2xl border border-white/20 text-slate-800 max-w-3xl mx-auto">
+            <form action="{% url 'spots:spot_list' %}" method="GET" class="grid grid-cols-1 md:grid-cols-12 gap-3">
+                <!-- Text query -->
+                <div class="md:col-span-5 relative">
+                    <label class="block text-left text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 pl-3">Que cherchez-vous ?</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" name="q" placeholder="Ex: Café avec terrasse, Poissons..." 
+                               class="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold focus:outline-none focus:border-teal-500 focus:bg-white transition">
+                    </div>
+                </div>
+
+                <!-- Quartier / Destination -->
+                <div class="md:col-span-4 relative">
+                    <label class="block text-left text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 pl-3">Où ? (Quartier)</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-location-dot absolute left-3.5 top-1/2 -translate-y-1/2 text-teal-600 text-sm"></i>
+                        <select name="quartier" class="w-full pl-10 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold focus:outline-none focus:border-teal-500 focus:bg-white transition appearance-none cursor-pointer">
+                            <option value="">Grand Tunis (Tous)</option>
+                            {% for q in nav_quartiers %}
+                            <option value="{{ q.nom }}">{{ q.nom }}</option>
+                            {% endfor %}
+                        </select>
+                        <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="md:col-span-3 flex items-end">
+                    <button type="submit" class="w-full py-3 px-5 bg-gradient-to-r from-teal-600 to-emerald-500 hover:from-teal-700 hover:to-emerald-600 text-white font-bold rounded-2xl shadow-lg shadow-teal-500/25 flex items-center justify-center space-x-2 transition transform active:scale-95">
+                        <i class="fa-solid fa-sparkles text-sm"></i>
+                        <span>Explorer</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Quick Pill Filters -->
+            <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-center gap-2 text-xs">
+                <span class="text-slate-400 font-medium mr-1"><i class="fa-solid fa-fire text-amber-500 mr-1"></i> Populaire :</span>
+                <a href="{% url 'spots:spot_list' %}?categorie=restaurants" class="px-3 py-1 rounded-full bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-slate-600 font-medium transition">🍽️ Restaurants</a>
+                <a href="{% url 'spots:spot_list' %}?categorie=cafes" class="px-3 py-1 rounded-full bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-slate-600 font-medium transition">☕ Salons de thé</a>
+                <a href="{% url 'spots:spot_list' %}?terrasse=1" class="px-3 py-1 rounded-full bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-slate-600 font-medium transition">☀️ Terrasses</a>
+                <a href="{% url 'spots:spot_list' %}?vue_mer=1" class="px-3 py-1 rounded-full bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-slate-600 font-medium transition">🌊 Vue sur Mer</a>
+                <a href="{% url 'spots:spot_list' %}?pepite=1" class="px-3 py-1 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-800 font-bold transition">💎 Pépites locales</a>
+            </div>
+        </div>
+
+        <!-- Secondary CTA: "Le Hasard" & "Autour de moi" -->
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm font-semibold">
+            <a href="{% url 'spots:random_spot' %}" class="inline-flex items-center space-x-2.5 px-6 py-3 rounded-full bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-lg shadow-amber-500/20 transition transform hover:-translate-y-0.5">
+                <i class="fa-solid fa-dice text-lg"></i>
+                <span>Laisse le hasard choisir ta sortie !</span>
+            </a>
+            <a href="{% url 'spots:spot_list' %}?autour=1" class="inline-flex items-center space-x-2 px-5 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/20 transition">
+                <i class="fa-solid fa-location-crosshairs text-teal-400"></i>
+                <span>Autour de moi</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- CATEGORIES SECTION (CAROUSEL / GRID) -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-20">
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
+        {% for cat in nav_categories %}
+        <a href="{% url 'spots:spot_list' %}?categorie={{ cat.slug }}" 
+           class="bg-white p-4 rounded-2xl shadow-sm hover:shadow-xl border border-slate-100 flex flex-col items-center text-center group transition duration-300 transform hover:-translate-y-1">
+            <div class="w-13 h-13 w-12 h-12 rounded-2xl bg-teal-50 group-hover:bg-teal-600 text-teal-600 group-hover:text-white flex items-center justify-center text-xl mb-2.5 transition duration-300">
+                <i class="fa-solid {{ cat.icone }}"></i>
+            </div>
+            <span class="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-teal-600 transition">{{ cat.libelle }}</span>
+            <span class="text-[11px] text-slate-400 font-medium mt-0.5">{{ cat.lieux.count }} adresses</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- SECTION 1: PÉPITES LOCALES (Label Pépite Locale - Unique Feature RF11) -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-slate-200">
+        <div>
+            <div class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold mb-2">
+                <i class="fa-solid fa-gem text-amber-600"></i>
+                <span>Exclusivité TunisSpot</span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                Les Pépites Locales Recommandées
+            </h2>
+            <p class="text-sm text-slate-500 mt-1">
+                Adresses authentiques plébiscitées par les résidents tunisiens, loin des pièges à touristes.
+            </p>
+        </div>
+        <a href="{% url 'spots:spot_list' %}?pepite=1" class="mt-4 sm:mt-0 text-sm font-bold text-teal-600 hover:text-teal-700 flex items-center">
+            Voir toutes les pépites <i class="fa-solid fa-arrow-right ml-1.5 text-xs"></i>
+        </a>
+    </div>
+
+    <!-- Grid of Pepites -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {% for lieu in pepites %}
+        <div class="spot-card bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 group flex flex-col">
+            <!-- Image Container -->
+            <div class="relative h-56 overflow-hidden">
+                <img src="{{ lieu.image_principale }}" alt="{{ lieu.nom }}" 
+                     class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                
+                <!-- Floating Badge Pepite -->
+                <div class="absolute top-3.5 left-3.5 badge-pepite text-white text-xs font-black px-3 py-1 rounded-full shadow-md flex items-center space-x-1">
+                    <i class="fa-solid fa-gem text-xs"></i>
+                    <span>Pépite Locale</span>
+                </div>
+
+                <!-- Price range badge -->
+                <div class="absolute top-3.5 right-3.5 bg-black/60 backdrop-blur-md text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                    {{ lieu.fourchette_prix }}
+                </div>
+
+                <!-- Location & Crowd index -->
+                <div class="absolute bottom-3 left-3.5 right-3.5 flex items-center justify-between text-white">
+                    <span class="text-xs font-semibold flex items-center drop-shadow">
+                        <i class="fa-solid fa-location-dot text-teal-400 mr-1.5"></i> {{ lieu.quartier.nom }}
+                    </span>
+                    <span class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-md">
+                        <span class="inline-block w-1.5 h-1.5 rounded-full {% if lieu.indice_foule == 'Faible' %}bg-emerald-400{% elif lieu.indice_foule == 'Moyen' %}bg-amber-400{% else %}bg-rose-400{% endif %} mr-1"></span>
+                        {{ lieu.indice_foule }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="p-5 flex-1 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="text-xs font-bold text-teal-600 uppercase tracking-wider">{{ lieu.categorie.libelle }}</span>
+                        <div class="flex items-center space-x-1 bg-amber-50 text-amber-900 px-2 py-0.5 rounded-lg text-xs font-black">
+                            <i class="fa-solid fa-star text-amber-500 text-[11px]"></i>
+                            <span>{{ lieu.note_moyenne }}</span>
+                            <span class="text-slate-400 font-normal text-[10px]">({{ lieu.nombre_avis }})</span>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'spots:spot_detail' lieu.slug %}" class="block group-hover:text-teal-600 transition">
+                        <h3 class="text-lg font-bold text-slate-900 leading-snug">{{ lieu.nom }}</h3>
+                    </a>
+                    
+                    <p class="text-xs text-slate-500 line-clamp-2 mt-2 leading-relaxed">
+                        {{ lieu.description }}
+                    </p>
+                </div>
+
+                <!-- Amenities tags -->
+                <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+                    <div class="flex items-center space-x-3 text-slate-400 text-xs">
+                        {% if lieu.terrasse %}<span title="Terrasse"><i class="fa-solid fa-sun text-amber-500"></i></span>{% endif %}
+                        {% if lieu.wifi %}<span title="Wi-Fi gratuit"><i class="fa-solid fa-wifi text-teal-500"></i></span>{% endif %}
+                        {% if lieu.vue_mer %}<span title="Vue mer"><i class="fa-solid fa-water text-sky-500"></i></span>{% endif %}
+                        {% if lieu.acces_pmr %}<span title="Accès PMR"><i class="fa-solid fa-wheelchair text-indigo-500"></i></span>{% endif %}
+                    </div>
+
+                    <a href="{% url 'spots:spot_detail' lieu.slug %}" class="text-xs font-bold text-slate-900 hover:text-teal-600 flex items-center">
+                        Découvrir <i class="fa-solid fa-chevron-right ml-1 text-[10px]"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- SPOTLIGHT CAROUSEL & INTERACTIVE MAP TEASER -->
+<section class="bg-slate-900 text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            
+            <div class="lg:col-span-5 space-y-5">
+                <span class="px-3 py-1 rounded-full bg-teal-500/20 text-teal-400 text-xs font-bold uppercase tracking-wider">
+                    <i class="fa-solid fa-map-location-dot mr-1"></i> Exploration Cartographique
+                </span>
+                <h2 class="text-3xl sm:text-4xl font-black tracking-tight leading-tight">
+                    Tous les spots de Tunis sur une carte interactive
+                </h2>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                    Localisez instantanément les restaurants, terrasses panoramiques et salons de thé autour de vous. Filtrez par quartier (Sidi Bou Saïd, La Marsa, Médina) et calculez directement l'itinéraire avec le métro ou le TGM.
+                </p>
+                
+                <div class="pt-2 flex flex-wrap gap-3">
+                    <a href="{% url 'spots:spot_list' %}?view=map" class="px-6 py-3 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-2xl shadow-lg shadow-teal-500/20 text-sm flex items-center space-x-2 transition">
+                        <i class="fa-solid fa-map"></i>
+                        <span>Ouvrir la Carte Plein Écran</span>
+                    </a>
+                    <a href="{% url 'transports:comparator' %}" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-2xl text-sm flex items-center space-x-2 transition border border-slate-700">
+                        <i class="fa-solid fa-train text-sky-400"></i>
+                        <span>Lignes & Stations TGM</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Leaflet Preview Mini-Map -->
+            <div class="lg:col-span-7">
+                <div class="bg-slate-800 rounded-3xl p-3 shadow-2xl border border-slate-700">
+                    <div id="homeMap" class="w-full h-80 sm:h-96 rounded-2xl z-10"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- SECTION 2: TOP SPOTS DU MOMENT (Tabbed Catalog) -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 pb-4 border-b border-slate-200">
+        <div>
+            <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                Les Incontournables de Tunis
+            </h2>
+            <p class="text-sm text-slate-500 mt-1">Sélectionnés avec soin pour vos sorties en famille, en couple ou entre amis.</p>
+        </div>
+        <div class="mt-4 sm:mt-0 flex items-center space-x-2">
+            <a href="{% url 'spots:spot_list' %}" class="px-4 py-2 bg-slate-900 hover:bg-teal-600 text-white text-xs font-bold rounded-full transition">
+                Voir tout le catalogue ({{ total_spots }})
+            </a>
+        </div>
+    </div>
+
+    <!-- Grid of spots -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {% for lieu in top_spots %}
+        <div class="spot-card bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 group flex flex-col">
+            <!-- Card Thumbnail -->
+            <div class="relative h-48 overflow-hidden">
+                <img src="{{ lieu.image_principale }}" alt="{{ lieu.nom }}" 
+                     class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                
+                <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-slate-900 text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow">
+                    {{ lieu.categorie.libelle }}
+                </div>
+
+                <div class="absolute top-3 right-3">
+                    <button class="w-8 h-8 rounded-full bg-white/90 backdrop-blur-md text-slate-400 hover:text-rose-500 flex items-center justify-center transition shadow">
+                        <i class="fa-solid fa-heart text-sm"></i>
+                    </button>
+                </div>
+
+                <div class="absolute bottom-2.5 left-3 text-white text-xs font-semibold drop-shadow">
+                    <i class="fa-solid fa-location-dot text-teal-400 mr-1"></i> {{ lieu.quartier.nom }}
+                </div>
+            </div>
+
+            <!-- Card Content -->
+            <div class="p-4 flex-1 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-xs font-bold text-amber-500 flex items-center">
+                            <i class="fa-solid fa-star mr-1"></i> {{ lieu.note_moyenne }}
+                        </span>
+                        <span class="text-xs font-bold text-slate-400">{{ lieu.fourchette_prix }}</span>
+                    </div>
+
+                    <a href="{% url 'spots:spot_detail' lieu.slug %}" class="block group-hover:text-teal-600 transition">
+                        <h4 class="font-bold text-slate-900 text-base leading-snug truncate">{{ lieu.nom }}</h4>
+                    </a>
+
+                    <p class="text-xs text-slate-500 line-clamp-2 mt-1.5 leading-relaxed">
+                        {{ lieu.description }}
+                    </p>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span class="font-medium text-slate-400">
+                        ~{{ lieu.prix_moyen }} DT <span class="text-[10px]">/ pers</span>
+                    </span>
+                    <a href="{% url 'spots:spot_detail' lieu.slug %}" class="font-bold text-teal-600 hover:text-teal-700">
+                        Consulter <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- MODULE 5 TEASER: GÉNÉRATEUR DE JOURNÉE PARFAITE (RF16) -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="bg-gradient-to-r from-teal-700 via-teal-600 to-emerald-600 rounded-3xl p-8 sm:p-12 text-white shadow-xl relative overflow-hidden">
+        <div class="relative z-10 max-w-2xl">
+            <span class="px-3 py-1 rounded-full bg-white/20 text-white text-xs font-bold uppercase tracking-wider mb-4 inline-block">
+                <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i> Algorithme Intelligent
+            </span>
+            <h2 class="text-3xl sm:text-4xl font-black tracking-tight leading-tight mb-4">
+                Le Générateur de Journée Parfaite
+            </h2>
+            <p class="text-base text-teal-100 mb-8 leading-relaxed">
+                Indiquez votre temps disponible, votre budget et votre envie (romantique, culturelle, farniente vue mer ou foodie). Notre algorithme conçoit pour vous un itinéraire étape par étape optimisé pour limiter les trajets.
+            </p>
+            <a href="{% url 'itineraries:generator' %}" class="inline-flex items-center space-x-2.5 px-6 py-3.5 bg-white text-slate-900 hover:bg-slate-100 font-bold rounded-2xl shadow-lg transition transform hover:-translate-y-0.5">
+                <i class="fa-solid fa-play text-teal-600"></i>
+                <span>Générer Mon Programme Sur-Mesure</span>
+            </a>
+        </div>
+        <!-- Decorative Icon in background -->
+        <i class="fa-solid fa-map-location-dot absolute -right-10 -bottom-10 text-white/10 text-[260px] pointer-events-none"></i>
+    </div>
+</section>
+
+<!-- MODULE 6 TEASER: ÉVÉNEMENTS & BONS PLANS DU MOMENT (RF27 & Offres) -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="flex items-center justify-between mb-8 pb-4 border-b border-slate-200">
+        <div>
+            <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                Agenda & Bons Plans Partenaires
+            </h2>
+            <p class="text-sm text-slate-500 mt-1">Festivals, soirées musicales et réductions exclusives réservées aux membres TunisSpot.</p>
+        </div>
+        <a href="{% url 'events:event_list' %}" class="text-sm font-bold text-teal-600 hover:text-teal-700">
+            Voir tout l'agenda <i class="fa-solid fa-arrow-right ml-1"></i>
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {% for event in events %}
+        <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 p-4 sm:p-5 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-5">
+            <img src="{{ event.image }}" alt="{{ event.titre }}" class="w-full sm:w-44 h-36 rounded-2xl object-cover flex-shrink-0">
+            <div class="flex-1 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between text-xs text-rose-500 font-bold mb-1">
+                        <span><i class="fa-regular fa-calendar-days mr-1"></i> {{ event.date_debut|date:"d M Y - H:i" }}</span>
+                        <span class="px-2 py-0.5 rounded-full bg-rose-50 text-rose-600">{{ event.categorie }}</span>
+                    </div>
+                    <h4 class="font-bold text-slate-900 text-base leading-snug">{{ event.titre }}</h4>
+                    <p class="text-xs text-slate-500 line-clamp-2 mt-1">{{ event.description }}</p>
+                </div>
+                <div class="mt-3 flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                    <span class="font-semibold text-slate-600">
+                        <i class="fa-solid fa-location-dot text-teal-500 mr-1"></i> {{ event.lieu.nom }}
+                    </span>
+                    <span class="font-bold text-emerald-600">
+                        {% if event.prix == 0 %}Gratuit{% else %}{{ event.prix }} DT{% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- MODULE 1 TEASER: PASSEPORT DE DÉCOUVERTE -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+    <div class="bg-slate-900 rounded-3xl p-8 sm:p-10 text-white flex flex-col md:flex-row items-center justify-between gap-8 border border-slate-800">
+        <div class="space-y-3 max-w-xl">
+            <div class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 text-xs font-bold">
+                <i class="fa-solid fa-award"></i>
+                <span>Gamification & Communauté</span>
+            </div>
+            <h3 class="text-2xl sm:text-3xl font-black">Rejoignez le Passeport de Découverte</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">
+                Chaque lieu visité, photo partagée ou avis vérifié vous rapporte des points de réputation. Débloquez les badges <em>« Explorateur de la Médina »</em>, <em>« Roi du Café »</em> et accédez au statut prestigieux de <strong>Guide Local Certifié</strong> !
+            </p>
+        </div>
+        <div class="flex-shrink-0">
+            {% if user.is_authenticated %}
+            <a href="{% url 'users:profil' %}" class="px-6 py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-2xl shadow-lg transition flex items-center space-x-2">
+                <i class="fa-solid fa-id-badge text-lg"></i>
+                <span>Consulter Mon Passeport</span>
+            </a>
+            {% else %}
+            <a href="{% url 'users:register' %}" class="px-6 py-3.5 bg-teal-500 hover:bg-teal-400 text-white font-bold rounded-2xl shadow-lg transition flex items-center space-x-2">
+                <i class="fa-solid fa-user-plus text-lg"></i>
+                <span>Créer Mon Profil Gratuit</span>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize Leaflet preview map
+    document.addEventListener('DOMContentLoaded', function() {
+        const map = L.map('homeMap').setView([36.85, 10.28], 11);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        const spotsData = [
+            {% for s in top_spots %}
+            {
+                nom: "{{ s.nom|escapejs }}",
+                lat: {{ s.latitude }},
+                lng: {{ s.longitude }},
+                quartier: "{{ s.quartier.nom|escapejs }}",
+                url: "{% url 'spots:spot_detail' s.slug %}",
+                note: "{{ s.note_moyenne }}"
+            },
+            {% endfor %}
+        ];
+
+        spotsData.forEach(function(spot) {
+            const marker = L.marker([spot.lat, spot.lng]).addTo(map);
+            marker.bindPopup(`
+                <div style="font-family: sans-serif; font-size: 12px;">
+                    <strong style="color: #0f766e; font-size: 13px;">${spot.nom}</strong><br>
+                    <span>${spot.quartier}</span> | <b>⭐ ${spot.note}</b><br>
+                    <a href="${spot.url}" style="color: #0284c7; font-weight: bold; text-decoration: underline;">Voir la fiche</a>
+                </div>
+            `);
+        });
+    });
+</script>
+{% endblock %}
